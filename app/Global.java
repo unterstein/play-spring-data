@@ -1,25 +1,23 @@
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.node.Node;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.repository.cdi.ElasticsearchRepositoryBean;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import play.Application;
 import play.GlobalSettings;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 /**
  * Application wide behaviour. We establish a Spring application context for the dependency injection system and
  * configure Spring Data.
  */
 public class Global extends GlobalSettings {
-
-    /**
-     * The name of the persistence unit we will be using.
-     */
-    static final String DEFAULT_PERSISTENCE_UNIT = "default";
 
     /**
      * Declare the application context to be used - a Java annotation based application context requiring no XML.
@@ -36,7 +34,7 @@ public class Global extends GlobalSettings {
         // AnnotationConfigApplicationContext can only be refreshed once, but we do it here even though this method
         // can be called multiple times. The reason for doing during startup is so that the Play configuration is
         // entirely available to this application context.
-        ctx.register(SpringDataJpaConfiguration.class);
+        ctx.register(EmbeddedElasticConfig.class);
         ctx.scan("controllers", "models");
         ctx.refresh();
 
@@ -64,26 +62,36 @@ public class Global extends GlobalSettings {
         return ctx.getBean(aClass);
     }
 
-    /**
-     * This configuration establishes Spring Data concerns including those of JPA.
-     */
     @Configuration
-    @EnableJpaRepositories("models")
-    public static class SpringDataJpaConfiguration {
+    @EnableElasticsearchRepositories(basePackages = "models", repositoryFactoryBeanClass = ElasticsearchRepositoryBean.class)
+    public static class EmbeddedElasticConfig  {
 
-        @Bean
-        public EntityManagerFactory entityManagerFactory() {
-            return Persistence.createEntityManagerFactory(DEFAULT_PERSISTENCE_UNIT);
+        private Settings elasticsearchSettings = ImmutableSettings.settingsBuilder()
+            .put("path.home", "target/elastic")
+            .put("http.port", 8200)
+            .build();
+
+        private Node node = nodeBuilder().local(true).settings(elasticsearchSettings).node();
+
+        private Client client = node.client();
+
+        public EmbeddedElasticConfig() {
         }
 
         @Bean
-        public HibernateExceptionTranslator hibernateExceptionTranslator() {
-            return new HibernateExceptionTranslator();
+        public ElasticsearchTemplate elasticsearchTemplate() throws Exception {
+            return new ElasticsearchTemplate(client);
         }
 
         @Bean
-        public JpaTransactionManager transactionManager() {
-            return new JpaTransactionManager();
+        public Client client() {
+            return client;
         }
+
+        public void destroy() throws Exception {
+            node.close();
+            client.close();
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 package models;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -11,5 +12,5 @@ import javax.inject.Singleton;
  */
 @Named
 @Singleton
-public interface PersonRepository extends CrudRepository<Person, Long> {
+public interface PersonRepository extends ElasticsearchRepository<Person, Long> {
 }

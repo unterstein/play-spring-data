@@ -1,6 +1,6 @@
 package models;
 
-import javax.persistence.Entity;
+import org.springframework.data.elasticsearch.annotations.Document;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -10,7 +10,7 @@ import javax.persistence.Id;
  * associated with collections of these model objects belong to the PersonRepository e.g. findOne, findAll etc.
  * Play Java will synthesise getter and setter methods for us and therefore keep JPA happy (JPA expects them).
  */
-@Entity
+@Document(indexName = "World")
 public class Person {
     @Id
     @GeneratedValue
