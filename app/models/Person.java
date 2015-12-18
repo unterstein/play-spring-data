@@ -1,8 +1,7 @@
 package models;
 
 import org.springframework.data.elasticsearch.annotations.Document;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
 
 /**
  * This declares a model object for persistence usage. Model objects are generally anaemic structures that represent
@@ -13,7 +12,6 @@ import javax.persistence.Id;
 @Document(indexName = "World")
 public class Person {
     @Id
-    @GeneratedValue
     public Long id;
 
     public String firstname;
