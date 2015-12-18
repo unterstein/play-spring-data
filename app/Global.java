@@ -6,7 +6,6 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.repository.cdi.ElasticsearchRepositoryBean;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import play.Application;
 import play.GlobalSettings;
@@ -63,7 +62,7 @@ public class Global extends GlobalSettings {
   }
 
   @Configuration
-  @EnableElasticsearchRepositories(basePackages = "models", repositoryFactoryBeanClass = ElasticsearchRepositoryBean.class)
+  @EnableElasticsearchRepositories(basePackages = "models")
   public static class EmbeddedElasticConfig {
 
     private Settings elasticsearchSettings = ImmutableSettings.settingsBuilder()
