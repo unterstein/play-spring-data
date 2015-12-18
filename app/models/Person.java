@@ -5,10 +5,11 @@ import org.springframework.data.annotation.Id;
 
 @Document(indexName = "World")
 public class Person {
-    @Id
-    public Long id;
 
-    public String firstname;
+  @Id
+  public Long id;
 
-    public String surname;
+  public String firstname;
+
+  public String surname;
 }
