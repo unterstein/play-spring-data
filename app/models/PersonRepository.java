@@ -11,5 +11,5 @@ import javax.inject.Singleton;
  */
 @Named
 @Singleton
-public interface PersonRepository extends ElasticsearchRepository<Person, Long> {
+public interface PersonRepository extends ElasticsearchRepository<Person, String> {
 }

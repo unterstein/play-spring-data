@@ -36,10 +36,12 @@ public class Application extends Controller {
 
     final Person savedPerson = personRepository.save(person);
 
-    final Person retrievedPerson = personRepository.findOne(savedPerson.id);
-
     // Deliver the index page with a message showing the id that was generated.
 
-    return ok(views.html.index.render("Found id: " + retrievedPerson.id + " of person/people"));
+    String result = "";
+    for (Person person1 : personRepository.findAll()) {
+      result += person.id + "|";
+    }
+    return ok(views.html.index.render(result));
   }
 }

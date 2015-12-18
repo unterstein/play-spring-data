@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 public class Person {
 
   @Id
-  public Long id;
+  public String id;
 
   public String firstname;
 
